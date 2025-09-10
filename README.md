@@ -1,69 +1,34 @@
-# React + TypeScript + Vite
+# Gerenciador Financeiro Pessoal
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 🎯 Conceito
 
-Currently, two official plugins are available:
+O objetivo deste aplicativo é ser um gerenciador de gastos e investimentos baseado na web. A plataforma permitirá o gerenciamento de finanças através de entradas manuais, importação de arquivos `.csv` e, futuramente, integração automática com APIs de outras plataformas.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 📋 Regras de Negócio
 
-## Expanding the ESLint configuration
+- O sistema funciona a partir de inputs manuais, com cada entrada separada em **débito** e **crédito**.
+- É possível sincronizar o extrato bancário com o aplicativo através da importação de arquivos `.csv`.
+- Todos os débitos e créditos são centralizados em uma tabela que permite filtragem e busca.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## ✨ Funcionalidades
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### MVP (Produto Mínimo Viável)
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+- [x] Entrada de extrato (importação de `.csv`).
+- [x] Entrada manual de débitos e créditos.
+- [x] Gráficos baseados em estatísticas de gastos e receitas.
+- [x] Gráficos para previsão de investimentos.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+### Pós-MVP (Melhorias Futuras)
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+- [ ] **Feature**: Implementar um sistema de metas financeiras com previsão de tempo para alcançá-las.
+- [ ] **Melhoria**: Integração com APIs de terceiros para sincronização automática de dados.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 🛠️ Tecnologias Utilizadas
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+*(Adicione aqui as tecnologias, linguagens e frameworks que você está utilizando no projeto)*
+
+-   **Frontend**: React.js
+-   **Backend**: Node.js
+-   **Banco de Dados**: Supabase
+
