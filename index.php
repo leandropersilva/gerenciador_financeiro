@@ -1,8 +1,8 @@
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
-
 $url = $_SERVER['REQUEST_URI'] != '/' ? explode('/', substr($_SERVER['REQUEST_URI'], 1)) : '';
+
 $controller = $url[0] ?? 'home';
 $metodo = $url[1] ?? 'dashboard';
 

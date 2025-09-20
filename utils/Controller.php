@@ -1,33 +1,32 @@
 <?php
-
 abstract class Controller
 {
-    public function loadView($view, $dados = [])
+
+    private function verificarArquivo($arquivo, $pasta)
     {
-        if (file_exists(__DIR__ . "/../view" . $view . '.php')) {
-            require_once(__DIR__ . "/../view/" . $view . '.php');
-        }
-        extract($dados);
-    }
-    
-    public function loadModel($model, $dados = [])
-    {
-        if (file_exists(__DIR__ . "/../model/" . $model . '.php')) {
-            require_once(__DIR__ . "/../model/" . $model . '.php');
-        }
-        extract($dados);
+        return file_exists(__DIR__ . "/../{$pasta}/{$arquivo}.php");
     }
 
-    public function loadMV($view, $model, $dados = []){
+    private function loadView($view, $dados = [])
+    {
+        extract($dados);
+        require_once(__DIR__ . "/../view/" . $view . '.php');
+    }
+
+    private function loadModel($model, $params = []) {
+        require_once(__DIR__ . "/../model/" . $model . '.php');
+
+        $model_obj = new $model();
+        $dados = $model_obj->getData();
+
+        return $dados;
+    }
+
+    public function loadMV($view, $model, $dados = [])
+    {
+        if (!$this->verificarArquivo($model, 'model')) exit('Model não encontrado');
+        if (!$this->verificarArquivo($view, 'view')) exit('View não encontrado');
         $this->loadModel($model, $dados);
         $this->loadView($view);
     }
-
-    /* 
-        o que um controller deve ter:
-            - Requisição no banco de dadoss (CRUD)
-            - Montar a view com os dados X
-            - Carregar apenas a view X
-            - Carregar apenas o model X
-    */
 }
