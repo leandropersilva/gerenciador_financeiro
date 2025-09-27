@@ -1,6 +1,6 @@
-<pre>
+<pre style="background-color: #ffffff80;">
     <?php
-    print_r($user);
+    print_r($dados);
     exit;
     ?>
 </pre>

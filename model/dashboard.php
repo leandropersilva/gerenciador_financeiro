@@ -3,8 +3,9 @@ require_once __DIR__ . "/../utils/Model.php";
 
 class Dashboard extends Model
 {
-    public function getData()
+     public function getData($params = [])
     {
-        $this->getData();
+        $dados = 123;
+        return $this->validarDados($dados, 'nada encontrado');
     }
 }
