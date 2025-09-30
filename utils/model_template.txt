@@ -1,11 +1,11 @@
 <?php
 require_once __DIR__ . "/../utils/Model.php";
 
-class Dashboard extends Model
+class Model extends Model
 {
-    protected $tableName = 'dashboard';
+    protected $tableName = 'Model';
     protected $primaryKey = 'id';
-    protected $fillable = ['name', 'description'];
+    protected $fillable = ['item_1', 'item_2'];
 
     public function getTableName()
     {
@@ -39,8 +39,7 @@ class Dashboard extends Model
 
     public function getAll()
     {
-        return  ['name' => 'Dashboard', 'description' => 'This is the dashboard model'];
-        // return true;
+        return true;
     }
 
     public function validate($data)

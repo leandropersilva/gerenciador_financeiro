@@ -10,7 +10,10 @@ abstract class Controller
     private function loadView($view, $dados = [])
     {
         if (is_array($dados)) extract($dados);
+
+        require_once(__DIR__ . "/../utils/html_components/top.html");
         require_once(__DIR__ . "/../view/" . $view . '.php');
+        require_once(__DIR__ . "/../utils/html_components/bottom.html");
     }
 
     private function loadModel($model, $params = [])
@@ -18,7 +21,7 @@ abstract class Controller
         require_once(__DIR__ . "/../model/" . $model . '.php');
 
         $model_obj = new $model();
-        $dados = $model_obj->getData($params);
+        $dados = $model_obj->getAll($params);
         return $dados;
     }
 
@@ -31,7 +34,7 @@ abstract class Controller
     {
         if (!$this->verificarArquivo($model, 'model')) exit('Model não encontrado');
         if (!$this->verificarArquivo($view, 'view')) exit('View não encontrado');
-        -$params = $this->getModelParams();
+        $params = $this->getModelParams();
         $this->loadView($view, $this->loadModel($model, $params));
     }
 }
