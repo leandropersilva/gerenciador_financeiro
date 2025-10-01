@@ -10,7 +10,3 @@ const response = await ai.models.generateContent({
 const get_response = () => {
   return response.json();
 }
-
-if (isset($REQUEST['action'])) {
-return get_response();
-}

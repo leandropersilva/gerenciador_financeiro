@@ -8,10 +8,12 @@ $metodo = $url[1] ?? 'dashboard';
 
 $caminho_controller = __DIR__ . "/./controller/" . ucfirst($controller) . ".php";
 
-if (!file_exists($caminho_controller)) exit("Erro, controller {$controller} não encontrado");
+if (!file_exists($caminho_controller)) 
+    exit("Erro, controller {$controller} não encontrado");
 require_once $caminho_controller;
 
-if(!method_exists($controller, $metodo)) exit("Erro, método {$metodo} não encontrado");
+if(!method_exists($controller, $metodo)) 
+    exit("Erro, método {$metodo} não encontrado");
 
 $classe = new $controller();
 $classe->$metodo();

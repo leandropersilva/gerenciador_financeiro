@@ -36,28 +36,70 @@
 
             // Requisição AJAX com jQuery
             $.ajax({
-                    url: 'api_handler.php', // Verifique o caminho
+                    url: '/ApiGemini/handler',
                     type: 'POST',
                     contentType: 'application/json',
                     data: JSON.stringify({
                         prompt: promptText
                     }),
-                    dataType: 'json'
+                    dataType: 'json',
+                    timeout: 15000, // evita pendurar
+                    cache: false
                 })
-                .done(function(data) {
-                    // Sucesso na requisição (equivale ao .then() para sucesso)
-                    $responseDiv.text(data.reply);
+                .done(function(data, textStatus, jqXHR) {
+                    // Sucesso HTTP (ex.: 200)
+                    // Se seu backend padroniza { reply, error }, valide contrato:
+                    if (data && data.reply) {
+                        $responseDiv.text(data.reply);
+                    } else if (data && data.error) {
+                        $responseDiv.text('Erro da aplicação: ' + data.error);
+                    } else {
+                        $responseDiv.text('Resposta inesperada do servidor.');
+                    }
                 })
                 .fail(function(jqXHR, textStatus, errorThrown) {
-                    // Falha na requisição (equivale ao .catch())
-                    console.error('Erro na requisição:', textStatus, errorThrown);
-                    const errorMsg = jqXHR.responseJSON?.error || 'Ocorreu um erro ao obter a resposta.';
-                    $responseDiv.text(errorMsg);
+                    // Falhas de rede/HTTP
+                    // jqXHR.status: 0 (rede/CORS/timeout), 404, 401, 500, etc.
+                    if (textStatus === 'timeout') {
+                        $responseDiv.text('Tempo esgotado ao contatar o endpoint.');
+                        return;
+                    }
+
+                    switch (jqXHR.status) {
+                        case 0:
+                            // Sem conexão, CORS bloqueado, DNS, SSL, request abortada
+                            $responseDiv.text('Falha de conexão (rede/CORS). Verifique o endpoint e a rede.');
+                            break;
+                        case 404:
+                            $responseDiv.text('Endpoint não encontrado (404). Verifique a rota/URL.');
+                            break;
+                        case 401:
+                            $responseDiv.text('Não autorizado (401). Sessão expirada ou credenciais ausentes.');
+                            break;
+                        case 403:
+                            $responseDiv.text('Acesso negado (403).');
+                            break;
+                        case 415:
+                            $responseDiv.text('Tipo de conteúdo inválido (415). Use application/json.');
+                            break;
+                        case 429:
+                            $responseDiv.text('Muitas requisições (429). Tente novamente mais tarde.');
+                            break;
+                        case 500:
+                            $responseDiv.text('Erro interno no servidor (500).');
+                            break;
+                        case 502:
+                        case 503:
+                        case 504:
+                            $responseDiv.text('Falha no serviço upstream ou indisponível (5xx).');
+                            break;
+                        default:
+                            // Tente extrair mensagem do backend
+                            const msg = jqXHR.responseJSON?.error || jqXHR.responseText || errorThrown || 'Erro desconhecido.';
+                            $responseDiv.text('Falha na requisição: ' + msg);
+                    }
                 })
-                .always(function() {
-                    // Sempre executa, com sucesso ou falha (equivale ao .finally())
-                    $submitButton.prop('disabled', false);
-                });
+
         });
     });
 </script>
