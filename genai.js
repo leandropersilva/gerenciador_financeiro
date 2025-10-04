@@ -1,12 +1,10 @@
 import { GoogleGenAI } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+const ai = new GoogleGenAI({ apiKey: 'AIzaSyaCvHbeSVLsWydTxl6ALoXfL7bM7NLy17lA' });
 
 const response = await ai.models.generateContent({
   model: "gemini-2.0-flash",
-  contents: "Explique o que é uma API em uma frase."
+  contents: "como fazer café?"
 });
 
-const get_response = () => {
-  return response.json();
-}
+console.log(response.text);

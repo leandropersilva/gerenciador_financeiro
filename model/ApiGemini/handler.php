@@ -8,12 +8,12 @@ final class GeminiHandler
     private $timeout;
 
     public function __construct(
-        $apiKey = 'AIzaSyD_cnheHtx1k4Hebg3VZFjECsdwhKFgvRw',
-        $model = 'gemini-pro',
+        $apiKey = null,
+        $model = 'gemini-2.0-flash',
         $baseUrl = 'https://generativelanguage.googleapis.com/v1beta',
         $timeout = 30
     ) {
-        $this->apiKey  = 'AIzaSyD_cnheHtx1k4Hebg3VZFjECsdwhKFgvRw';
+        $this->apiKey  = trim($apiKey ?? 'AIzaSyCvHbeSVLsWydTxl6ALoXfL7bM7NLy17lA');
         $this->model   = $model;
         $this->baseUrl = rtrim($baseUrl, '/');
         $this->timeout = $timeout;
@@ -21,7 +21,6 @@ final class GeminiHandler
 
     public function handle()
     {
-        // return $this->send(200, ['reply' => 'OK']);
         header('Content-Type: application/json');
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -51,10 +50,9 @@ final class GeminiHandler
 
         $reply = $this->generateContent($prompt);
         if ($reply['ok'] === false) {
-            // Erro ao falar com o provedor
             $this->send($reply['status'], [
-                'error' => $reply['error'],
-                'details' => $reply['details'] ?? null
+                'error'   => $reply['error'],
+                'details' => $reply['details'] ?? null,
             ]);
             return;
         }
@@ -63,50 +61,81 @@ final class GeminiHandler
             'success' => true,
             'prompt'  => $prompt,
             'reply'   => $reply['text'],
+            'usage'   => $reply['usage'] ?? null,
+            'model'   => $reply['modelVersion'] ?? null,
+            'id'      => $reply['responseId'] ?? null,
         ]);
     }
 
-    private function generateContent(string $prompt)
+    private function generateContent($prompt)
     {
         $url = sprintf(
-            '%s/models/%s:generateContent?key=%s',
+            '%s/models/%s:generateContent',
             $this->baseUrl,
-            $this->model,
-            urlencode($this->apiKey)
+            $this->model
         );
 
         $payload = [
             'contents' => [
                 [
+                    'role'  => 'user',
                     'parts' => [
                         ['text' => $prompt]
                     ]
                 ]
-            ]
+            ],
         ];
 
         $json = json_encode($payload, JSON_UNESCAPED_UNICODE);
+
         $ch = curl_init($url);
         curl_setopt_array($ch, [
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_HTTPHEADER     => ['Content-Type: application/json'],
+            CURLOPT_HTTPHEADER     => [
+                'Content-Type: application/json',
+                'x-goog-api-key: ' . $this->apiKey,
+            ],
             CURLOPT_POST           => true,
             CURLOPT_POSTFIELDS     => $json,
             CURLOPT_TIMEOUT        => $this->timeout,
-            // Em produção, mantenha a verificação SSL ativada (true por padrão)
+            CURLOPT_CONNECTTIMEOUT => 10,
+            CURLOPT_CAINFO => __DIR__ . '/../../cacert.pem',
             CURLOPT_SSL_VERIFYPEER => true,
+            CURLOPT_SSL_VERIFYHOST => 2,
         ]);
 
         $response = curl_exec($ch);
 
         if ($response === false) {
-            $err = curl_error($ch);
+            $errNo = curl_errno($ch);
+            $err   = curl_error($ch);
             curl_close($ch);
+
+            // LOG TEMPORÁRIO - REMOVER DEPOIS
+            error_log("CURL ERROR - Code: $errNo | Message: $err");
+
+            // Mapeia erros específicos
+            $errorMap = [
+                6 => ['status' => 502, 'error' => 'DNS_RESOLUTION_FAILED'],
+                7 => ['status' => 502, 'error' => 'CONNECTION_REFUSED'],
+                28 => ['status' => 504, 'error' => 'UPSTREAM_TIMEOUT'],
+                35 => ['status' => 502, 'error' => 'SSL_HANDSHAKE_FAILED'],
+                51 => ['status' => 502, 'error' => 'SSL_PEER_VERIFICATION_FAILED'],
+                60 => ['status' => 502, 'error' => 'SSL_CACERT_MISSING'],
+                77 => ['status' => 502, 'error' => 'SSL_CACERT_BADFILE'],
+            ];
+
+            $mapped = $errorMap[$errNo] ?? ['status' => 502, 'error' => 'UPSTREAM_NETWORK_ERROR'];
+
             return [
-                'ok' => false,
-                'status' => 504,
-                'error' => 'UPSTREAM_TIMEOUT',
-                'details' => $err,
+                'ok'      => false,
+                'status'  => $mapped['status'],
+                'error'   => $mapped['error'],
+                'details' => [
+                    'curl_code'    => $errNo,
+                    'curl_message' => $err,
+                    'url'          => $url
+                ],
             ];
         }
 
@@ -117,38 +146,40 @@ final class GeminiHandler
 
         if ($status !== 200) {
             return [
-                'ok' => false,
+                'ok'     => false,
                 'status' => $status ?: 502,
-                'error' => 'UPSTREAM_ERROR',
-                'details' => $data ?: $response,
+                'error'  => 'UPSTREAM_ERROR',
+                'details' => is_array($data) ? $data : ['raw' => $response],
             ];
         }
 
         $text = $data['candidates'][0]['content']['parts'][0]['text'] ?? null;
-
         if (!is_string($text) || $text === '') {
             return [
-                'ok' => false,
+                'ok'     => false,
                 'status' => 502,
-                'error' => 'INVALID_UPSTREAM_RESPONSE',
+                'error'  => 'INVALID_UPSTREAM_RESPONSE',
                 'details' => $data,
             ];
         }
 
         return [
-            'ok'   => true,
-            'text' => $text,
+            'ok'           => true,
+            'text'         => $text,
+            'usage'        => $data['usageMetadata'] ?? null,
+            'modelVersion' => $data['modelVersion'] ?? null,
+            'responseId'   => $data['responseId'] ?? null,
         ];
     }
 
-    private function send(int $status, array $body): void
+
+    private function send($status, $body)
     {
         http_response_code($status);
         echo json_encode($body, JSON_UNESCAPED_UNICODE);
-        // Opcional: exit; se este script for o endpoint final
     }
 
-    private function sendError(int $status, string $message): void
+    private function sendError($status, $message)
     {
         $this->send($status, ['error' => $message]);
     }
