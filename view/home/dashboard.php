@@ -31,50 +31,59 @@
             $responseContainer.show();
             $submitButton.prop('disabled', true);
 
-            $.ajax({
-                    url: '/ApiGemini/handler',
-                    type: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify({
+            const apiService = new AjaxService();
+
+            async function enviarPrompt(promptText) {
+                try {
+                    const data = await apiService.post('/ApiGemini/handler', {
                         prompt: promptText
-                    }),
-                    dataType: 'json',
-                    timeout: 15000,
-                    cache: false
-                })
-                .done(function(data) {
+                    });
+
+                    console.log(data);
+
                     if (data && data.reply) {
-                        $responseDiv.text(data.reply);
+                        return data.reply;
                     } else if (data && data.error) {
-                        $responseDiv.text('Erro: ' + data.error);
+                        return 'Erro: ' + data.error;
                     } else {
-                        $responseDiv.text('Resposta inesperada do servidor.');
-                    }
-                })
-                .fail(function(jqXHR, textStatus) {
-                    if (textStatus === 'timeout') {
-                        $responseDiv.text('Tempo esgotado ao contatar o servidor.');
-                        return;
+                        return 'Resposta inesperada do servidor.';
                     }
 
-                    switch (jqXHR.status) {
-                        case 0:
-                            $responseDiv.text('Falha de conexão. Verifique sua internet.');
-                            break;
-                        case 404:
-                            $responseDiv.text('Serviço não encontrado.');
-                            break;
-                        case 500:
-                            $responseDiv.text('Erro interno do servidor.');
-                            break;
-                        default:
-                            const msg = jqXHR.responseJSON?.error || 'Erro ao processar requisição.';
-                            $responseDiv.text(msg);
+                } catch (jqXHR) {
+                    console.error("Falha na requisição:", jqXHR);
+
+                    let errorMessage;
+                    if (jqXHR.statusText === 'timeout') {
+                        errorMessage = 'Tempo esgotado ao contatar o servidor.';
+                    } else {
+                        switch (jqXHR.status) {
+                            case 0:
+                                errorMessage = 'Falha de conexão. Verifique sua internet.';
+                                break;
+                            case 404:
+                                errorMessage = 'Serviço não encontrado.';
+                                break;
+                            case 500:
+                                errorMessage = 'Erro interno do servidor.';
+                                break;
+                            default:
+                                const msg = jqXHR.responseJSON?.error || 'Erro ao processar requisição.';
+                                errorMessage = msg;
+                        }
                     }
+                    return errorMessage; 
+                }
+            }
+
+            enviarPrompt("Qual a cor do céu?")
+                .then(resposta => {
+                    console.log("Resultado final:", resposta);
+                    $responseDiv.text(resposta); 
                 })
-                .always(function() {
+                .finally(() => {
                     $submitButton.prop('disabled', false);
                 });
+
         });
     });
 </script>

@@ -13,7 +13,7 @@ final class GeminiHandler
         $baseUrl = 'https://generativelanguage.googleapis.com/v1beta',
         $timeout = 30
     ) {
-        $this->apiKey  = trim($apiKey ?? 'AIzaSyCvHbeSVLsWydTxl6ALoXfL7bM7NLy17lA');
+        $this->apiKey  = trim($apiKey == '' ? getenv('GEMINI_API_KEY') : $apiKey);
         $this->model   = $model;
         $this->baseUrl = rtrim($baseUrl, '/');
         $this->timeout = $timeout;
