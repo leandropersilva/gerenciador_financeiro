@@ -82,9 +82,8 @@ A regra é simples: **o nome de um método em um Controller determina os nomes d
 **Exemplo Prático: Perfil de Usuário**
 
 1.  **URL**: `https://dominio.com/usuario/perfil`
-2.  **Controller**: O sistema invocará o método `perfil()` dentro da classe `UsuarioController`.
+2.  **Controller**: O sistema invocará o método `perfil()` dentro da classe `Usuario`.
 3.  **Ação**: A chamada `loadMV()` irá carregar automaticamente:
     *   **Model**: `PerfilModel.php`
     *   **View**: `perfil.view.php`
     *   **Script**: O script associado será `perfil.js`.
-```
