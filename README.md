@@ -85,5 +85,5 @@ A regra é simples: **o nome de um método em um Controller determina os nomes d
 2.  **Controller**: O sistema invocará o método `perfil()` dentro da classe `Usuario`.
 3.  **Ação**: A chamada `loadMV()` irá carregar automaticamente:
     *   **Model**: `Perfil.php`
-    *   **View**: `perfil.view.php`
+    *   **View**: `perfil.php`
     *   **Script**: O script associado será `perfil.js`.
