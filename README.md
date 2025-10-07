@@ -1,13 +1,12 @@
-# Nome do Projeto
+# Gerenciador Financeiro
 
-> Uma breve descrição do que este projeto faz. Por exemplo: "Sistema de gerenciamento de clientes para a empresa X".
+Um gerenciador financeiro é uma ferramenta que ajuda a gerenciar relatórios financeiros personalizados com base em dados reais. Ele pode ser usado para criar relatórios de despesa, orçamentos, planos de negócios, entre outros.
 
 ---
 
 ## Requisitos
 
 *   PHP 8.1+
-*   Composer
 *   Node.js 18+
 *   Um servidor web (Apache, Nginx)
 
@@ -19,21 +18,17 @@
     ```
     git clone [URL_DO_SEU_REPOSITORIO]
     ```
-2.  Instale as dependências do PHP:
-    ```
-    composer install
-    ```
-3.  Instale as dependências do Node.js:
+2.  Instale as dependências do Node.js:
     ```
     npm install
     ```
-4.  Configure suas variáveis de ambiente. Renomeie o arquivo `.env.example` para `.env` e ajuste as configurações do banco de dados.
+3.  Configure suas variáveis de ambiente. Renomeie o arquivo `.env.example` para `.env` e ajuste as configurações do banco de dados.
 
 ---
 
 ## Como Executar
 
-1.  Aponte a raiz do seu servidor web para o diretório `/public` do projeto.
+1.  Aponte a raiz do seu servidor web para o diretório `/` do projeto.
 2.  Acesse `http://localhost` (ou o endereço configurado) em seu navegador.
 
 ---
