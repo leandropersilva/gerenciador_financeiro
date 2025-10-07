@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/leandropersilva/gerenciador_financeiro#readme",
   "dependencies": {
-    "@google/genai": "^1.22.0"
+    "@google/genai": "^1.22.0",
+    "jquery": "^3.7.1"
   }
 }

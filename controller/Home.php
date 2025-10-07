@@ -10,6 +10,6 @@ class Home extends Controller
 
     public function dashboard()
     {
-        $this->loadMV('/home/dashboard', 'dashboard', ['admin'=>1]);
+        $this->loadMV('/home/dashboard', 'dashboard');
     }
 }
