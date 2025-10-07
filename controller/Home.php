@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . "/../utils/Controller.php";
+require_once __DIR__ . "/../utils/abstractClasses/Controller.php";
 
 class Home extends Controller
 {

@@ -1,11 +1,11 @@
 <?php
-require_once __DIR__ . "/../utils/Controller.php";
+require_once __DIR__ . "/../utils/abstractClasses/Controller.php";
 
 class ApiGemini extends Controller
 {
     public function handler()
     {
-        require_once __DIR__ . "/../public/apiGemini/handler.php";
+        require_once __DIR__ . "/../utils/apiGemini/handler.php";
 
         $handler = new GeminiHandler(
             '',
