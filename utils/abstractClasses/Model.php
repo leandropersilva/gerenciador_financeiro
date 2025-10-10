@@ -10,13 +10,19 @@ abstract class Model
     protected $primaryKey = 'id';
     protected $fillable = [];
 
-    abstract protected function getTableName();
-    abstract protected function getFillable();
+    public function getTableName()
+    {
+        return $this->tableName;
+    }
+
+    public function find($item, $where){
+        $sql = "SELECT {$item} FROM {$this->tableName} WHERE {$where}";
+    }
 
     abstract public function create($data);
-    abstract public function find($id);
     abstract public function update($id, $data);
     abstract public function delete($id);
+
     abstract public function getAll();
     abstract public function validate($data);
 
@@ -33,20 +39,9 @@ abstract class Model
 
     public function __set($property, $value)
     {
-        if (in_array($property, $this->getFillable())) {
-            $this->data[$property] = $value;
-        }
+        $this->data[$property] = $value;
     }
 
-    public function fill($data)
-    {
-        foreach ($data as $key => $value) {
-            if (in_array($key, $this->getFillable())) {
-                $this->data[$key] = $value;
-            }
-        }
-        return $this;
-    }
 
     public function toArray()
     {

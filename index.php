@@ -1,6 +1,12 @@
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
+require_once __DIR__ . '/./utils/db/DatabaseConnection.php';
+
+DatabaseConnection::setConfig([
+    
+]);
+
 $url = $_SERVER['REQUEST_URI'] != '/' ? explode('/', substr($_SERVER['REQUEST_URI'], 1)) : '';
 
 $controller = $url[0] ?? 'home';
